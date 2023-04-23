@@ -15,14 +15,14 @@ HUGGINGFACE_TOKEN = "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"
 SENTIMENT_MODEL= AutoModelForSequenceClassification.from_pretrained("DevBeom/dbert_Beomsang", use_auth_token = HUGGINGFACE_TOKEN)
 TOKENIZER  = AutoTokenizer.from_pretrained("DevBeom/dbert_Beomsang", use_auth_token = HUGGINGFACE_TOKEN)
 DIFFUSOR_MODEL = "DevBeom/stable-diffusion-class4"
-        
+STATEMENT = "This image was generated from AI based on your diary"          
+
 scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
 pipe = StableDiffusionPipeline.from_pretrained(DIFFUSOR_MODEL, scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16).to("cuda")
 
 
 # Start flask app and set to ngrok
 app = Flask(__name__, template_folder='.') # period is because default templates folder is /templates
-
 
 @app.route('/')
 def initial():
@@ -46,6 +46,7 @@ def generate_image():
     sentiment_weight = ",(NegSenPor:{:.1f}".format(1 + result['score']) + ")"
   elif result['label'] == 'positive' and type_of_art == 'portrait':
     sentiment_weight = ",(PosSenPor:{:.1f}".format(1 + result['score']) + ")"
+ 
 
   print(sentiment_weight)
   
@@ -65,12 +66,12 @@ def generate_image():
             guidance_scale=7.5,
             generator=None
     ).images 
-
+  
   for img in images:
       buffered = BytesIO()
       img.save(buffered, format="PNG")
       img_str = base64.b64encode(buffered.getvalue())
       b = "data:image/png;base64," + str(img_str)[2:-1]
 
-  return render_template('/static/index.html', generated_image=b, print_sentiment = print_sentiment)
-app.run(host='0.0.0.0' port=5000 )
+  return render_template('/static/index.html', generated_image=b, print_sentiment = print_sentiment, statement=STATEMENT, diary=diary)
+app.run(host='0.0.0.0', port=5000)
