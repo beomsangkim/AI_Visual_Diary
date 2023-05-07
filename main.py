@@ -1,22 +1,23 @@
 from flask import Flask, render_template, send_file, request
-
-
 import torch
 from diffusers import StableDiffusionPipeline
 from diffusers import StableDiffusionPipeline, DDIMScheduler
 from transformers import *
 from torch import autocast
 import json
-
 import base64
 from io import BytesIO
 
+
+#Download model
 HUGGINGFACE_TOKEN = "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" 
 SENTIMENT_MODEL= AutoModelForSequenceClassification.from_pretrained("DevBeom/dbert_Beomsang", use_auth_token = HUGGINGFACE_TOKEN)
 TOKENIZER  = AutoTokenizer.from_pretrained("DevBeom/dbert_Beomsang", use_auth_token = HUGGINGFACE_TOKEN)
 DIFFUSOR_MODEL = "DevBeom/stable-diffusion-class4"
 STATEMENT = "This image was generated from AI based on your diary"          
 
+
+# Initialize the DDIM scheduler and diffusion pipeline
 scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
 pipe = StableDiffusionPipeline.from_pretrained(DIFFUSOR_MODEL, scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16).to("cuda")
 
@@ -38,20 +39,25 @@ def generate_image():
   result = sentiment_model(diary)[0]
   sentiment_weight = ""
 
-  if result['label'] == 'negative' and type_of_art == 'landscape':
-    sentiment_weight = ",(NegSenLan:{:.1f}".format(1 + result['score']) + ")"
-  elif result['label'] == 'positive' and type_of_art == 'landscape':
-    sentiment_weight = ",(I have positive feeling today:{:.1f}".format(1 + result['score']) + ")"
-  elif result['label'] == 'negative' and type_of_art == 'portrait':
-    sentiment_weight = ",(NegSenPor:{:.1f}".format(1 + result['score']) + ")"
-  elif result['label'] == 'positive' and type_of_art == 'portrait':
-    sentiment_weight = ",(PosSenPor:{:.1f}".format(1 + result['score']) + ")"
- 
-
-  print(sentiment_weight)
+  # Analyze the sentiment of the diary entry
+  result = sentiment_model(diary)[0]
+  score = 1 + result["score"]
+  label = result["label"]
+# Define weights for the sentiment and type of art
+  if label == "negative" and type_of_art == "landscape":
+      sentiment_weight = f", (NegSenLan:{score:.1f})"
+  elif label == "positive" and type_of_art == "landscape":
+      sentiment_weight = f", (I have positive feeling today:{score:.1f})"
+  elif label == "negative" and type_of_art == "portrait":
+      sentiment_weight = f", (NegSenPor:{score:.1f})"
+  elif label == "positive" and type_of_art == "portrait":
+      sentiment_weight = f", (PosSenPor:{score:.1f})"
+  else:
+      sentiment_weight = ""
   
   print_sentiment = "I have " + result['label'] + " feeling today score: {:.2f}".format(100* + result['score'])
 
+# Define negative prompts for the image generation
   NEGATIVE_PROMPT = "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy, blurred, text, Typography,watermark, grainy"
   
   prompt = diary + sentiment_weight + "," + type_of_art 
