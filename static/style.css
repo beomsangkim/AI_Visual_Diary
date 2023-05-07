@@ -1,7 +1,12 @@
 body {
-    background-color: #383838;
+    background-color: white;
+    font-family: 'Orbitron', sans-serif;
     }
 
+h1 {
+    font-weight: 800;
+}
+    
 .form-signin {
     padding: 15px;
     } 
@@ -11,6 +16,8 @@ textarea {
     margin-left: auto;
     margin-right: auto;
     width: 60%;
+    padding: 5px;
+    font-family: 'Arimo', sans-serif;
     }
 
 
@@ -18,3 +25,69 @@ textarea {
     max-width: 100%;
     height: auto;
     }
+
+    .buttonfx{
+        color: black; /* button text color */
+        background: transparent;
+        border: none;
+        border: 1px solid black;
+        letter-spacing: 0.0625em;
+        padding: 8px 10px; 
+        text-transform: uppercase;
+        line-height: 2;
+        position: relative;
+        display: inline-block;
+        margin-right: auto;
+        margin-bottom: auto;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all .5s;
+    }    
+
+/* //// Default effect: Slide from Top  //// */
+
+.loading-container {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.buttonfx:before,
+.buttonfx:after{
+content: '';
+position: absolute;
+left: 0;
+top: 0;
+right: 0;
+bottom: 0;
+height: 100%;
+background: turquoise; /* onhover background color */
+z-index: -1;
+transform: translate3D(0,-100%,0); /* move elements above button so they don't appear initially */
+transition: all .5s;
+}
+
+.buttonfx:before{
+background: white; /* button default background color */
+z-index: -2;
+transform: translate3D(0,0,0);
+}
+
+.buttonfx:hover{
+	color: white;
+}
+
+.buttonfx:hover:after{
+transform: translate3D(0,0,0);
+transition: all .5s;
+}
+.angleinleft:after{
+    width: 200%;
+    transform-origin: 0 bottom;
+    transform: translate3D(-50%,0,0) rotate(-50deg);
+}
+    
+.angleinleft:hover:after{
+    transform: rotate(0deg);
+    transition: all .5s;
+}
