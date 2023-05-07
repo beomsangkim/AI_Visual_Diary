@@ -6,6 +6,10 @@
     <meta name="author" content="Beomsang Kim">
     <title>Visual Diary</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arimo&family=Orbitron:wght@400;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
@@ -15,9 +19,9 @@
 <body class="text-center">
     <main class="form-signin container">
     <form action="\submit-prompt" method="post" id="submission-form">
-        <p style="font-size: 100px; color: teal">AI Visual Diary</p>
+        <h1 style="font-size: 90px;">AI VISUAL DIARY</h1>
         <br>
-        <p style="font-size: 15px; color: white"> AI visual Diary analyses sentiment and generates image base on your diary. The program aims user's emotionla experience and removes the barrier between human and AI</p>
+        <p style="font-size: 15px;"> AI visual Diary analyses sentiment and generates image base on your diary.<br>The program aims user's emotionla experience and removes the barrier between human and AI</p>
         <div class="form-floating mb-3">
         <textarea placeholder="Write your today here." cols="100" rows="10" id="sentiment" name="sentiment-input"></textarea>
 
@@ -30,17 +34,20 @@
         </select>
         </div>
         
-    <button class="btn btn-lg btn-outline-info mb-3" type="submit" onclick="showLoadingMessage()">Submit</button>
+    <button class="buttonfx angleinleft bouncein" onclick="showLoadingImage()">SUBMIT</button>
     </form>
-    <p style="font-size: 14px; color: white">Diary: {{diary}}</p>
+    <p style="font-size: 14px;">Diary: {{diary}}</p>
     <br>
-    <p class="loading-message" style="font-size: 20px; color: white; display: none;">Please wait while the image is being generated...</p>
-    <a href="https://forms.gle/CvEACjPpKwVHUdmTA" style="font-size: 20px; color: white")>If you like it, can you click here and do some short survey please?</a> 
+    <div class="loading-container">
+    <img src="/static/loading.gif" class="loading" width="50" height="50" style="display: none;">
+    </div>
     <br>
-    <img src="{{ generated_image|default("https://images.squarespace-cdn.com/content/v1/6213c340453c3f502425776e/0715034d-4044-4c55-9131-e4bfd6dd20ca/2_4x.png?format=512w", true) }}" class="mainImg mb-3" alt="Generated Image">
+    <a href="https://forms.gle/CvEACjPpKwVHUdmTA" style="font-size: 20px; color: turquoise")>If you like it, can you click here and do some short survey please?</a> 
     <br>
-    <p style="font-size: 15px; color: white">Sentiment: {{print_sentiment}}</p>
-    <p style="font-size: 13px; color: white">{{statement}}</p>
+    <img src="{{ generated_image|default('/static/sample.jpg', true) }}" class="mainImg mb-3" alt="Generated Image">
+    <br>
+    <p style="font-size: 15px;">Sentiment: {{print_sentiment}}</p>
+    <p style="font-size: 13px;">{{statement}}</p>
     <br>
     </main>
     
